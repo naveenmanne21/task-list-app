@@ -292,3 +292,92 @@ button.danger {
   color: #b91c1c;
   font-weight: 600;
 }
+
+.filters {
+  display: flex;
+  align-items: flex-end;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+  padding: 12px 14px;
+  border: 1px solid #e5e5e5;
+  border-radius: 8px;
+  background: #fff;
+}
+
+.filter-search {
+  flex: 1 1 220px;
+}
+
+.checkbox {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding-bottom: 9px;
+}
+
+.filter-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.result-count {
+  margin: 0 0 10px;
+  font-size: 0.875rem;
+}
+
+.empty-state,
+.error-state {
+  padding: 40px 16px;
+  border: 1px dashed #c4c4c4;
+  border-radius: 8px;
+  background: #fff;
+  text-align: center;
+}
+
+.error-state {
+  border: 1px solid #fecaca;
+  background: #fef2f2;
+}
+
+.empty-state h2,
+.error-state h2 {
+  margin-top: 0;
+}
+
+.empty-actions {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.loading {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 40px 0;
+  color: #555;
+}
+
+.spinner {
+  width: 18px;
+  height: 18px;
+  border: 2px solid #c4c4c4;
+  border-top-color: #1d4ed8;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .spinner {
+    animation: none;
+  }
+}
