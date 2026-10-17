@@ -51,6 +51,10 @@ const dueDate = z
 const priority = z
   .union([z.string(), z.number()], { error: "Priority is required." })
   .transform((v, ctx) => {
+    if (typeof v === "string" && v.trim() === "") {
+      ctx.addIssue({ code: "custom", message: "Priority is required." });
+      return z.NEVER;
+    }
     const p = parsePriority(v);
     if (p === null) {
       ctx.addIssue({ code: "custom", message: "Priority must be a whole number from 1 to 5." });

@@ -1,0 +1,12 @@
+title,due_date,priority,notes
+Buy groceries,2026-11-05,2,"Milk, eggs, and bread"
+Pay rent,2026-11-01,1,
+
+Call plumber,2026-11-10,high,Leaking tap
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa,2026-11-12,3,Title is 201 characters
+Pay rent,2026-11-01,3,Same title and date as row 3
+Book dentist,2026-02-30,2,Not a real date
+,,,
+Plan trip,2026-12-20,4,"She said ""go"", so we go"
+Renew passport,2026-12-01,5
+Fix bike,2026-11-15,2,needs chain,and brakes

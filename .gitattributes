@@ -1,0 +1,2 @@
+# Keep CSV fixtures byte-exact (CRLF line endings are part of the test).
+*.csv -text
