@@ -131,3 +131,164 @@ input[aria-invalid="true"] {
 .auth-card h1 {
   margin-top: 0;
 }
+
+h1 {
+  margin: 0 0 16px;
+}
+
+button.secondary {
+  background: #fff;
+  color: #1d4ed8;
+}
+
+button.danger {
+  background: #fff;
+  border-color: #b91c1c;
+  color: #b91c1c;
+}
+
+.button-link {
+  display: inline-block;
+  padding: 8px 14px;
+  border: 1px solid #c4c4c4;
+  border-radius: 6px;
+  background: #fff;
+  color: #1a1a1a;
+  text-decoration: none;
+}
+
+.button-link.primary {
+  border-color: #1d4ed8;
+  background: #1d4ed8;
+  color: #fff;
+}
+
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+
+.page-header h1 {
+  margin: 0;
+}
+
+.task-form {
+  max-width: 640px;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 14px;
+}
+
+.form-actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.task-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.task {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  flex-wrap: wrap;
+  padding: 14px 16px;
+  border: 1px solid #e5e5e5;
+  border-radius: 8px;
+  background: #fff;
+}
+
+.task-main {
+  flex: 1 1 320px;
+  min-width: 0;
+}
+
+.task-title {
+  margin: 0 0 6px;
+  font-size: 1.05rem;
+  overflow-wrap: anywhere;
+}
+
+.task.is-done .task-title {
+  text-decoration: line-through;
+  color: #666;
+}
+
+.task-meta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  font-size: 0.875rem;
+  color: #555;
+}
+
+.task-notes {
+  margin: 8px 0 0;
+  color: #444;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.task-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.task-actions button,
+.task-actions .button-link {
+  padding: 5px 10px;
+  font-size: 0.875rem;
+}
+
+.badge {
+  display: inline-block;
+  padding: 1px 8px;
+  border-radius: 999px;
+  background: #f0f0f0;
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+.status-todo {
+  background: #eef2ff;
+  color: #3730a3;
+}
+
+.status-in_progress {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.status-done {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.priority-1,
+.priority-2 {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.overdue {
+  color: #b91c1c;
+  font-weight: 600;
+}
