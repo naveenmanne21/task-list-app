@@ -24,9 +24,14 @@ export default async function TasksPage({ searchParams }: Props) {
     <>
       <div className="page-header">
         <h1>Tasks</h1>
-        <Link href="/tasks/new" className="button-link primary">
-          New task
-        </Link>
+        <div className="header-actions">
+          <Link href="/import" className="button-link">
+            Import CSV
+          </Link>
+          <Link href="/tasks/new" className="button-link primary">
+            New task
+          </Link>
+        </div>
       </div>
 
       {total > 0 && <TaskFilters filters={filters} active={active} />}
