@@ -1,8 +1,6 @@
-export default function Home() {
-  return (
-    <>
-      <h1>Task List</h1>
-      <p>Scaffold is running. Sign-in and tasks arrive in the next steps.</p>
-    </>
-  );
+import { redirect } from "next/navigation";
+import { getCurrentUser } from "@/lib/auth/getCurrentUser";
+
+export default async function Home() {
+  redirect((await getCurrentUser()) ? "/tasks" : "/login");
 }
