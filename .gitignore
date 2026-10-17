@@ -1,6 +1,10 @@
 node_modules
 .next
+next-env.d.ts
+*.tsbuildinfo
 .env*
 !.env.example
 *.log
 .DS_Store
+# assessment brief (binary, not part of the submission)
+Context/
