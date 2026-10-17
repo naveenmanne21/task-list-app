@@ -1,0 +1,575 @@
+
+Claude Desktop (macOS), Connected
+Technical Assessment
+Full Stack Developer
+Overview
+Plan for about 3 hours and stop at the time limit; tell us what you would do next. Use any AI tools you like;
+we expect you to. We care about the result and how you work with AI.
+The task
+Build a small task-list web app with CSV import.
+Requirements
+• Stack: TypeScript, Next.js (App Router), Node.js and PostgreSQL (Supa base, or Postgres in
+Docker). The project must start with documented commands, and tests must run with npm test.
+• Sign-in, with each user seeing only their own tasks. Enforce this with row-level security.
+• Tasks have a title, notes, due date, priority (1 to 5) and status. Users can create, edit, complete and
+delete tasks (deleting must be a soft delete).
+• A task list with search and filters.
+• Loading, empty and error states. Plain styling is fine.
+• CSV import with the columns title, due_date, priority and notes. A row is invalid if the title is missing
+or over 200 characters, the due date is not a valid YYYY-MM-DD date, or the priority is not a whole
+number from 1 to 5. The server validates every row, imports the valid ones in a transaction, and
+shows the rest with a row number and reason. Rejected rows can be downloaded as a CSV. A task
+is a duplicate if the same title and due date already exist, in the file or in the account.
+• The import must handle quoted commas, blank rows and Windows line endings.
+• Tests for the validation, the duplicate handling, and that one user cannot read another user’s tasks.
+Edge cases to demonstrate
+1. Upload a file containing a duplicate task, an empty row, a row with priority &quot;high&quot;, a title over 200
+characters, and a quoted field with a comma in it. The valid rows are imported, each bad row is
+reported with a reason, and the app does not crash.
+What to submit
+1. A public GitHub repository link. It contains the code, tests, and a README with how to run it,
+how to run the tests, and what you would do next.
+2. An ai-log folder in the repository with the complete, unedited history of your AI sessions (chat,
+agent or IDE transcripts, from any tool). There is no length limit.
+3. A screen recording of 3 to 5 minutes (link in the README) showing the app working and the
+edge case.
+Repository rules
+• Make the repository public so it can be scanned and read on GitHub. We will not clone or run your
+code; you will run it yourself on screen in the live session. Name it generically, for example task-list-
+app, with no company name.
+• No secrets, personal data or binary files. Use only standard package-manager dependencies.
+Next step
+After you submit, we will schedule a live session of about 45 minutes (video on, recorded). You will share
+your screen, walk us through the running app and your code, and make a small change live. AI tools are
+allowed.
+
+This is the task i have, to get a job interview. I will now open a new window in visual Studio code and i want to start working from there. So that as they have recommended, i can share all the session histories. Give me steps
+
+Outlining steps to set up VS Code session logging.
+Outlining steps to set up VS Code session logging.
+Good call. Building it in VS Code means your AI transcripts get captured on your machine, which is what they want in ai-log. I stopped before writing any project files, so nothing here needs carrying over. (I started a throwaway Postgres in my sandbox for testing; ignore it.)
+
+Before you start (10 min)
+
+Check you have Node 20+, Git, and Docker Desktop running.
+Create a public GitHub repo named task-list-app with no company name, and clone it.
+Open that folder in a new VS Code window.
+Add a .gitignore with node_modules, .next, and .env* (but not .env.example). Commit this first so you never push secrets.
+Pick one AI tool and stay in it
+
+Claude Code in the VS Code terminal or extension is my suggestion. It saves full transcripts as .jsonl files under ~/.claude/projects/<your-project-path>/, so exporting is a plain copy.
+If you mix tools (Copilot chat, Cursor, claude.ai), export each one’s history into ai-log/ as a separate file. They said “from any tool”, but “complete” means don’t skip any.
+Include this conversation too
+You already used this chat to understand the task. Paste it into ai-log/00-planning-claude-web.md unedited, along with anything else you’ve asked an AI about this assessment.
+
+Kickoff prompt for your first session (adapt it)
+Give it the full assessment text and say:
+
+“Plan first, then build in small commits. Time-boxed to 3 hours.”
+Postgres in Docker via docker-compose.yml, with a documented npm run db:up and npm run db:migrate.
+For RLS without Supabase: own auth (email and password, signed cookie session), the app connects as a non-superuser role, and each request runs in a transaction with SET LOCAL app.user_id = .... The RLS policies use that setting, and FORCE ROW LEVEL SECURITY is on.
+Hand-written CSV parser (quoted commas, CRLF, blank rows), with row numbers counted from the original file.
+Tests with Vitest, and npm test runs everything: validation, duplicates (in-file and in-account), and a cross-user RLS read test against real Postgres.
+A sample-data/edge-cases.csv with exactly their five cases.
+Order of work (so you can stop cleanly at 3h)
+
+0:00–0:30: scaffold, schema, RLS migration, auth.
+0:30–1:15: task CRUD with soft delete, list, search and filters, loading/empty/error states.
+1:15–2:15: CSV import (parser, validation, duplicates, transaction, rejected-rows download).
+2:15–2:45: tests, including the RLS isolation one.
+2:45–3:00: README (run, test, what you’d do next), then stop.
+After the time limit, if you need it: record the video.
+Rules that are easy to miss
+
+No secrets, personal data, or binary files (so no screenshots in the repo, and use only npm packages). The video goes in as a link in the README.
+Don’t edit the AI logs, not even to tidy them.
+They’ll have you run it live and make a small change, so understand each file. Keep the code small and readable.
+Wrap-up
+Copy the transcripts into ai-log/, check git status for stray files, push, and add the video link to the README.
+
+If you want, tell me which tool you’ll use in VS Code and I’ll draft the exact kickoff prompt and the folder layout for it.
+
+docker destop is running, i have git, but when i checked node version i got v18.15.0
+
+Node 18.15 is too old. Current Next.js needs at least Node 20 (Next 16 requires 20.9+, and Next 15 wants 18.18+), so upgrade to Node 22 LTS.
+
+Easiest way, by OS
+
+Windows:
+Download the Node 22 LTS installer from nodejs.org and run it. It replaces your old version.
+Or, if you want to switch between versions later, install nvm-windows, then run nvm install 22 and nvm use 22.
+macOS / Linux:
+Install nvm.
+Run nvm install 22, then nvm use 22.
+
+Then check it worked
+
+Close all VS Code windows and terminals, then reopen. The old version is cached in already-open terminals.
+In the VS Code terminal run node -v. It should print v22.x.x.
+Run npm -v and git --version as well.
+
+Then continue with the setup
+
+Create the public GitHub repo task-list-app, clone it, and open the folder in a new VS Code window.
+Add the .gitignore first (node_modules, .next, .env* but not .env.example) and commit it.
+Tell the agent to add a .nvmrc containing 22 and an "engines": { "node": ">=20" } field in package.json. That documents the requirement for the reviewers.
+
+I don’t know your OS, so tell me if the commands above don’t match. Once node -v shows 22, say so and I’ll give you the kickoff prompt for the agent.
+
+this is what it gave me, but i need to ask it to use postgres in docker. Anyother things to correct and give me prompt
+
+The plan is good, and its structure and test list are solid. These are the changes I’d make, most important first.
+
+Must change
+
+Drop Supabase, use Docker Postgres. That means you write the auth yourself. Keep it minimal: email and password, bcryptjs for hashing, and a signed httpOnly session cookie (jose).
+RLS needs a non-owner database role. Superusers and table owners bypass RLS, which would make your isolation test pass for the wrong reason. So:
+Migrations run as the owner.
+The app and the tests connect as a separate app_user role.
+Use ALTER TABLE ... FORCE ROW LEVEL SECURITY.
+Replace auth.uid() with current_setting('app.user_id').
+Set the user per transaction, never per connection. Every request wraps its queries in BEGIN, then set_config('app.user_id', $1, true) (the true makes it transaction-local), then the queries, then COMMIT. A plain SET on a pooled connection can leak one user’s identity to the next request.
+Don’t filter deleted_at in the RLS select policy. Soft delete is an UPDATE, and an UPDATE that makes a row invisible to the select policy can fail with “new row violates row-level security policy”, especially with RETURNING. Make RLS about ownership only, and hide deleted rows in the queries. Have the agent write a soft-delete test early.
+Drop the plpgsql import_tasks function. Do the import in TypeScript inside one transaction instead: check existing title and due-date pairs, insert the valid rows, then commit. It’s easier to test, and easier for you to modify in the live session. Take a per-user pg_advisory_xact_lock at the start so two simultaneous imports can’t create duplicates.
+Drop the table-wide unique index on title and due date. Duplicates are an import rule, and a user may legitimately create two similar tasks by hand. Check duplicates in the import code only.
+Pin the Next.js version (15.x). Newer versions have renamed some conventions, such as middleware.ts, and surprises cost time here.
+
+Details to get right
+
+Row numbers: don’t use papaparse’s skipEmptyLines, because it loses the file position. Parse everything, number records yourself (header = row 1), and treat a row with all-empty cells (including ,,,) as blank and skipped. Trim headers, ignore extra columns, and reject the whole file if a required column is missing.
+Priority: accept only whole numbers 1 to 5 after trimming, and require it. Blank means invalid.
+Due date: make it required in the UI as well, since the CSV requires it. That avoids NULL edge cases.
+Duplicates: the first occurrence wins, and later ones are rejected with “duplicate of row N”. If the first row was itself invalid, the later one is not a duplicate. Account duplicates also appear in the rejected list with their row numbers, so pass the row number through to the duplicate check.
+Soft-deleted tasks don’t count as existing, and the README should say so.
+Matching: exact match after trimming the title. Case-insensitive matching goes beyond the spec, so skip it unless you want it.
+Rejected-rows CSV: quote fields properly when writing it, and test that it reads back correctly. Neutralise cells starting with =, +, - or @ so Excel doesn’t run them as formulas.
+Tests: the tests need Postgres, so the README should say docker compose up -d, then npm run db:migrate, then npm test. Better still, have the vitest global setup run the migrations itself.
+Extra RLS test: also test that a hard DELETE is impossible, with the DELETE privilege revoked from app_user.
+Time: build fixtures/edge-cases.csv early, since the screen recording depends on it.
+
+Prompt to paste
+
+The plan is approved with these changes. Start with step 1 and commit after each step with a clear message.
+
+STACK CHANGES
+- No Supabase. Use Postgres 16 in Docker via docker-compose.yml (healthcheck, non-default host port to avoid clashes). Provide npm scripts: db:up, db:migrate, test, dev. Migrations are plain SQL files with a small runner script using `pg`.
+- Pin Next.js to 15.x. Node >=20 in "engines", .nvmrc = 24. Prefer pure-JS dependencies (bcryptjs, jose, pg, papaparse, zod, vitest).
+- Own auth: users table, email+password (bcryptjs), signed httpOnly session cookie. SESSION_SECRET and DATABASE_URL go in .env.example as placeholders only. No secrets committed.
+
+ROW-LEVEL SECURITY
+- Migrations run as the owner role. The app AND the tests connect as a separate non-superuser, non-owner role `app_user`. Use ENABLE and FORCE ROW LEVEL SECURITY on tasks.
+- Policies use current_setting('app.user_id', true)::uuid. Every request runs inside a transaction that calls set_config('app.user_id', <id>, true) first. Never use plain SET on pooled connections.
+- RLS enforces ownership only. Do NOT filter deleted_at inside the select policy (soft-delete UPDATEs can fail against it). Hide deleted rows in queries instead.
+- Revoke DELETE from app_user so hard deletes are impossible. Soft delete = UPDATE deleted_at.
+
+IMPORT
+- Do the import in TypeScript in one transaction (no plpgsql function). Take pg_advisory_xact_lock on the user first. Check existing (title, due_date) pairs of non-deleted tasks, insert valid rows, commit. Any DB error rolls back everything.
+- No table-wide unique index on title+due_date. Duplicates are an import rule only.
+- Parse with papaparse WITHOUT skipEmptyLines so file positions are kept. Row number = record index, header = row 1. Rows with all-empty cells are blank: skipped and counted, not rejected. Strip BOM, handle CRLF and quoted commas. Trim headers, ignore extra columns, reject the whole file if a required column is missing.
+- Rules: title required, trimmed, max 200. due_date required, real calendar date YYYY-MM-DD. priority required, whole number 1-5 (reject "high", "3.5", blank). notes optional.
+- Duplicate = same trimmed title and due_date. First occurrence wins; later ones rejected as "duplicate of row N". If the first was invalid, the later row is not a duplicate. Duplicates of existing account tasks are also rejected with row number and reason.
+- Rejected-rows CSV: proper quoting, columns original + row_number + reason, neutralise cells starting with = + - @ (formula injection). Test that it round-trips.
+
+TASKS / UI
+- due date required in the UI too. Statuses: todo, in_progress, done; "complete" sets done.
+- Search (title+notes), filters (status, priority, overdue), loading/empty/error states. Plain CSS.
+
+TESTS
+- Unit: validation (200 vs 201 chars, priority 0/6/3.5/"high", Feb 29 leap/non-leap, bad dates), csv parsing (quoted commas, CRLF, blank rows, BOM), duplicates (in-file, in-account, first-invalid case).
+- Integration against Docker Postgres as app_user: user B cannot select, update, or soft-delete user A's task; B cannot insert with A's user_id; hard DELETE is blocked; soft delete works. The vitest global setup should run migrations on a test database so `npm test` works after `docker compose up -d`.
+- Create fixtures/edge-cases.csv with exactly: a duplicate row, a blank row, priority "high", a title over 200 chars, and a quoted field containing a comma, plus several valid rows. Use it in a test too.
+
+README must cover: prerequisites, exact start commands, how to run tests, assumptions, what I'd do next, and a placeholder line for the video link. Keep code small and readable, because I will explain it live and make a change on camera.
+
+Two things stay with you: exporting the transcripts into ai-log/ at the end, and recording the video. When the agent finishes step 1, paste anything surprising here and I’ll look at it.
+
+instead of giving me a full prompt, give me in steps
+
+Send these to the agent one at a time, and wait for each to finish and commit before the next. Each step has a quick check so you catch problems early.
+
+Step 0: Approve with changes (send first)
+
+Plan approved with changes. No Supabase: use Postgres 16 in Docker (docker-compose.yml) and write our own simple auth (email + password with bcryptjs, signed httpOnly session cookie with jose). Pin Next.js to 15.x, "engines" node >=20, .nvmrc = 24. Keep dependencies pure-JS. Import will be done in TypeScript in one transaction, not a plpgsql function. Keep code small and readable because I will explain it live. Commit after every step. Start with step 1 only, then stop and wait.
+Step 1: Scaffold and database
+
+Step 1: scaffold Next.js (App Router, TypeScript), docker-compose.yml for Postgres 16 (healthcheck, non-default host port), .env.example with placeholders only, and npm scripts db:up, db:migrate, dev, test. Migrations are plain SQL files with a small runner using `pg`. Write the first migration: users table and tasks table (title max 200, notes, due_date required, priority 1-5, status todo/in_progress/done, deleted_at for soft delete, user_id). Stop when `npm run db:up && npm run db:migrate` works.
+Check: both commands run without errors.
+
+Step 2: Row-level security
+
+Step 2: add RLS. Create a separate non-superuser, non-owner role app_user used by the app AND the tests. ENABLE and FORCE row level security on tasks. Policies use current_setting('app.user_id', true)::uuid. Do NOT filter deleted_at in the select policy (ownership only); hide deleted rows in queries instead. Revoke DELETE from app_user. Write a helper that runs each request in a transaction starting with set_config('app.user_id', <id>, true), never plain SET. Then write the integration test: user B cannot select, update or soft-delete user A's task, cannot insert with A's user_id, hard DELETE is blocked, and soft delete works. Make npm test run it.
+Check: npm test passes. Ask the agent to confirm the test connects as app_user, not the owner.
+
+Step 3: Auth
+
+Step 3: sign up, log in, log out with bcryptjs and a signed httpOnly session cookie. Protect /tasks and /import, and redirect unauthenticated users to /login. Every database call must go through the RLS helper with the logged-in user's id.
+Check: create two accounts in the browser.
+
+Step 4: Task CRUD and list
+
+Step 4: create, edit, complete and soft-delete tasks (due date required, priority required). Task list with search over title and notes, filters for status, priority and overdue, plus loading, empty and error states. Plain CSS.
+Check: log in as two users and confirm each sees only their own tasks.
+
+Step 5: CSV parsing and validation (pure functions, with unit tests)
+
+Step 5: write the CSV parser and row validator as pure functions with unit tests, no database yet. Use papaparse WITHOUT skipEmptyLines, so row numbers stay correct (header = row 1). Rows with all-empty cells are blank: skipped and counted, not rejected. Strip BOM, handle CRLF and quoted commas. Trim headers, ignore extra columns, reject the whole file if a required column is missing. Rules: title required, trimmed, max 200; due_date a real calendar date YYYY-MM-DD; priority a required whole number 1-5 (reject "high", "3.5", blank). Test 200 vs 201 chars, priority 0 and 6, Feb 29 in leap and non-leap years.
+Check: unit tests pass.
+
+Step 6: Duplicates, import and rejected-rows download
+
+Step 6: duplicate detection and the import. Duplicate = same trimmed title and due_date. First occurrence wins; later ones are rejected as "duplicate of row N". If the first one was invalid, a later one is not a duplicate. Also reject duplicates of existing non-deleted tasks in the account, with row number and reason. Import valid rows in ONE transaction (take pg_advisory_xact_lock for the user first); any DB error rolls back everything. Do not add a table-wide unique index. Add POST /api/import and an /import page showing the imported count, blank rows skipped, and a rejected table with row number and reason. Add a "Download rejected rows" CSV (original columns plus row_number and reason, proper quoting, neutralise cells starting with = + - @). Add tests for in-file duplicates, account duplicates and the first-invalid case.
+Check: tests pass.
+
+Step 7: Edge-case fixture and an end-to-end test
+
+Step 7: create fixtures/edge-cases.csv with exactly: one duplicate row, one blank row, one row with priority "high", one title over 200 characters, one quoted field containing a comma, plus several valid rows. Add a test that runs it through the import and asserts the imported count and each rejected row's reason. Make sure the app does not crash on it.
+Check: upload the file in the browser yourself. This is your demo.
+
+Step 8: README
+
+Step 8: write the README: prerequisites (Node 20+, Docker), exact start commands, how to run tests, assumptions (e.g. soft-deleted tasks don't count as duplicates), what I would do next, and a placeholder line for the video link. Then run a clean check: stop the DB, run db:up, db:migrate, npm test, npm run dev, and report any problems.
+After that, do these yourself
+
+Do a final test of the whole flow in the browser.
+Copy the session transcripts into ai-log/, along with the saved claude.ai planning chat.
+Record the 3 to 5 minute video, then add the link to the README.
+Check git status, then push.
+If a step fails or looks odd, paste the agent’s output here and I’ll help you decide what to say next.
+
+instead of using supabase, let us use postgres in docker, which can be spun up easily. Now analyze what shall be changed in other steps after the above stack change from supabase to postgres in docker and give full steps back
+
+i have given this prompt and it replied
+
+Drafting the corrected approval message and remaining step prompts.
+The agent’s revised plan is mostly right. Two roles, FORCE RLS, a transaction-local user id, no deleted_at in the policies, tests on a separate database and the import in TypeScript are all what we wanted. But it has a few problems to fix before you approve it.
+
+What to correct
+
+Its “fails safe” claim is wrong. It says that if app.user_id isn’t set, current_setting(...) returns NULL and queries see zero rows. That’s only true on a fresh connection. After a transaction-local set_config ends, a reused pooled connection returns an empty string, and ''::uuid throws an error. The fix is a small SQL function, app_current_user_id(), that wraps the setting in nullif(..., ''), used in the column default and every policy.
+Roles are cluster-wide. Migrations run against both the dev and test databases, so creating app_user has to be idempotent. Also say who creates app_owner: setting POSTGRES_USER=app_owner in docker-compose does it.
+The unique index needs a decision. The agent’s version is race-safe and simple, so I’m now fine keeping it, with changes:
+Make due_date required everywhere. Otherwise NULL dates never conflict and the UI is inconsistent with the CSV rules.
+Match the exact trimmed title. Case-insensitive matching goes beyond the spec.
+Catch the unique violation (23505) in create and edit and show a friendly error.
+Tests need two connections. Truncating needs owner rights, but every assertion must run as app_user, otherwise the RLS tests prove nothing. npm test should fail loudly if Postgres is down.
+Port and env. Host port 5432 may clash with a local Postgres, so use 5433. Make sure the scripts and vitest actually load .env.
+Smaller fixes:
+Drop citext and use a unique index on lower(email).
+Drop seed.sql and keep seed.ts only, hashing passwords at runtime.
+Measure title length in code points to match Postgres.
+Drop the due-date-range filter. The agent’s time estimates add up to exactly 180 minutes with no slack.
+Step 0: Send this first
+
+Plan approved with these changes:
+1. Add SQL function app_current_user_id() = nullif(current_setting('app.user_id', true), '')::uuid (STABLE). Use it in the tasks.user_id default and in ALL policies, because after a transaction-local set_config ends, a reused pooled connection returns '' not NULL and ''::uuid errors.
+2. docker-compose sets POSTGRES_USER=app_owner (migrations and test setup only). Migration 0001 creates app_user idempotently (DO block, IF NOT EXISTS): NOSUPERUSER NOBYPASSRLS, password from env. Roles are cluster-wide and migrations also run on tasks_test. Grant explicitly: tasks SELECT/INSERT/UPDATE only.
+3. Keep the unique index, but due_date is NOT NULL everywhere including the UI, and match on exact trimmed title (no lower()). Store titles trimmed. Catch unique violation 23505 in create/edit with a friendly message. Soft-deleted tasks don't count as duplicates.
+4. No citext: users.email is text with a unique index on lower(email); lowercase in code. Drop db/seed.sql, keep scripts/seed.ts only (hash with bcryptjs at runtime).
+5. Tests use two connections: owner for setup/truncate, app_user for every assertion. npm test must fail with a clear message if Postgres is unreachable, never skip silently.
+6. Env: DATABASE_URL (app_user), MIGRATION_DATABASE_URL (owner), plus test variants. Make sure scripts and vitest really load .env. Host port 5433.
+7. Check title length by code points ([...title].length) to match Postgres char_length.
+8. Drop the due-date-range filter; keep search, status, priority, overdue.
+Commit after each step. Start Step 1 only, then stop and wait.
+Step 1 (~15 min): Scaffold and Docker
+
+Step 1: scaffold Next.js 15 (App Router, TS), docker-compose.yml (postgres:16, POSTGRES_USER=app_owner, healthcheck, host port 5433, volume, init script creating tasks_test), .env.example, npm scripts db:up, db:down, db:migrate, dev, test, and scripts/migrate.ts (tsx, plain SQL files in db/migrations, schema_migrations table). Stop when db:up and db:migrate run cleanly.
+Check: both commands work, and re-running migrate does nothing.
+
+Step 2 (~25 min): Schema, RLS and the RLS tests
+
+Step 2: write migrations 0001 (roles, users, sessions) and 0002 (tasks, app_current_user_id(), unique index, ENABLE+FORCE RLS, policies on user_id only), plus lib/db/pool.ts and lib/db/withUser.ts (BEGIN, set_config('app.user_id', id, true), COMMIT/ROLLBACK). Then write tests/integration/rls.test.ts with globalSetup: user B can't select/update/soft-delete A's task (0 rows), can't insert with A's user_id, no user set returns 0 rows even on a reused connection, hard DELETE is permission denied, soft delete works. Run the tests as app_user.
+Check: npm test passes. Ask the agent which role the assertions connect as.
+
+Step 3 (~25 min): Auth
+
+Step 3: signup, login, logout Server Actions (zod, bcryptjs, sessions table, httpOnly sameSite=lax cookie, 7 days), getCurrentUser(), middleware that only checks cookie presence and redirects, and scripts/seed.ts creating demo users alice and bob. Every page and action calls getCurrentUser() and uses withUser.
+Check: log in as two different users in the browser.
+
+Step 4 (~25 min): Task CRUD
+
+Step 4: create, edit, complete (status=done) and soft-delete tasks. Required: title (max 200), due_date, priority 1-5. Queries filter deleted_at IS NULL. Handle the duplicate unique violation with a friendly message.
+Check: each user sees only their own tasks.
+
+Step 5 (~15 min): List, filters and UI states
+
+Step 5: task list with search (title+notes), filters for status, priority and overdue stored in URL search params, plus loading.tsx, error.tsx and an EmptyState. Plain CSS.
+Step 6 (~15 min): Parsing and validation, unit tests only
+
+Step 6: pure functions with unit tests, no DB. papaparse WITHOUT skipEmptyLines so row numbers stay correct (header = row 1, row number = record index). Rows with all-empty cells are blank: skipped and counted. Strip BOM, handle CRLF and quoted commas, trim headers, ignore extra columns, reject the whole file if a required column is missing. Rules: title required, trimmed, max 200 code points; due_date real calendar date YYYY-MM-DD; priority required, trimmed, whole number 1-5 (reject "high", "3.5", blank). Test 200/201 chars, priority 0/6, Feb 29 in 2024 and 2025.
+Step 7 (~30 min): Import
+
+Step 7: POST /api/import (auth, 1 MB and 5000-row limits, clear errors for empty/non-CSV/missing columns). In-file duplicates: first occurrence wins, later rows rejected "Duplicate of row N"; if the first row was invalid, the later one isn't a duplicate. Insert valid rows in ONE transaction via withUser using INSERT ... ON CONFLICT DO NOTHING RETURNING; map anything not returned back to its row number as "Duplicate of existing task". Any DB error rolls back everything. Respond { imported, skippedBlank, rejected: [{row, reason, data}] }. Build /import page with the results table and a Download rejected rows CSV (original columns + row_number + reason, proper quoting, neutralise cells starting with = + - @). Add tests: duplicates in file, in account, first-invalid case, rollback on failure, rejected CSV round-trip.
+Step 8 (~10 min): Edge-case demo
+
+Step 8: create fixtures/edge-cases.csv with exactly one duplicate, one blank row, one row with priority "high", one title over 200 characters, one quoted field containing a comma, plus several valid rows. Add a test that runs it through the import and asserts the imported count and each rejected row's reason, and that a second import rejects every row as an account duplicate.
+Check: upload it in the browser yourself. This is your demo.
+
+Step 9 (~10 min): README and clean check
+
+Step 9: README with prerequisites (Node 20+, Docker), exact commands (cp .env.example .env, npm install, db:up, db:migrate, db:seed, dev, test), assumptions (exact trimmed title match, soft-deleted tasks don't count as duplicates, due date required), design notes on the RLS approach, what I would do next, and a placeholder line for the video link. Then do a clean run: db:down, db:up, db:migrate, npm test, npm run dev, and report any problems.
+If you fall behind, cut in this order: seed script, overdue filter, polish. Don’t cut the import, the tests or the README.
+
+After Step 9, copy the transcripts into ai-log/, record the video, and push. If any step’s output looks off, paste it here and I’ll tell you what to ask the agent.
+
+why do i have to do rls testing now? it says it can start on step 2
+
+You don’t have to. It’s my preference, not a requirement, and the agent’s order (auth first, tests in its Step 6) will work too.
+
+Here’s why I’d still do the tests first:
+
+It’s cheap right now. The agent just ran these checks by hand and has every case fresh in context. Turning them into tests takes a few minutes. Later it has to reconstruct them.
+Auth builds on the RLS helper. withUser is how every later query talks to the database. If it has a bug, you’d find it after auth and CRUD are built on top. A test now catches it before that.
+The test setup is the risky part. The two-connection pattern (owner for setup, app_user for assertions) and npm test working with Docker are where things tend to break. Better to prove them early than at the end when you’re short on time.
+It protects your demo requirement. “One user can’t read another’s tasks” is one of the three required tests. Having it done and passing early removes that risk.
+The cost is about 10 minutes now, and you’d have to write the tests anyway.
+
+If you’d rather save time, tell the agent to start on auth, but ask for two things so nothing gets lost:
+
+withUser.ts is written as part of the auth step, since auth needs it.
+The RLS tests are written no later than right after task CRUD, not at the very end.
+It’s your call. Both paths are fine, and the second one is only a bit riskier.
+
+npm test passes all 17 tests, and the work is committed (c82c6e5). I've stopped here until you approve auth (Step 2).
+1. withUser: src/lib/db/withUser.ts does what you described: BEGIN, a transaction-local set_config, run fn, COMMIT, and ROLLBACK on error, always releasing the client. Two additions: it rejects a user ID that isn't a UUID, and if the ROLLBACK itself fails it destroys the connection instead of returning it to the pool.
+2. Vitest: vitest.config.ts loads .env and points the app's DATABASE_URL at TEST_DATABASE_URL, so the tests go through the real pool and withUser. tests/setup/globalSetup.ts refuses any database whose name doesn't end in _test and migrates tasks_test. When Postgres is down it exits with code 1 and says "…localhost:5433/tasks_test failed: ECONNREFUSED. Start it with: npm run db:up…". The owner connection in tests/helpers/db.ts is only used to create users, truncate tables, and inspect rows; every assertion runs as app_user.
+3. The tests: tests/integration/rls.test.ts covers everything on your list, plus that updated_at can't be set directly, that the trigger updates it, that a failure inside withUser rolls everything back, and that another user may use the same title and date.
+
+I first wrote "insert with no user" expecting a NOT NULL error (23502). Postgres actually runs the RLS check first and returns 42501, so I fixed the test to match.
+To prove the tests detect a real failure, I temporarily disabled RLS on tasks_test: the 6 isolation tests failed. I turned it back on and all 17 pass.
+
+How updated_at is maintained: the BEFORE UPDATE trigger already exists. tasks_set_updated_at in 0002_tasks.sql sets NEW.updated_at := now() on every update. Postgres checks column privileges only for columns named in the SET list, not for values a trigger changes, so it works without a grant. So the app can't set updated_at itself (permission denied) and the trigger always does. Both are now tested.
+Engines: set to >=20.9. Our env loader uses process.loadEnvFile, which only arrived in Node 20.12, so on 20.9–20.11 the app would run but db:migrate and npm test wouldn't. I added a clear error for that case. You're on Node 24 so it doesn't affect you. If you'd like engines to reflect this exactly, I can set it to >=20.12 or switch the loader to dotenv. Small extras: I imported scripts/env.ts with its .ts extension, which needed allowImportingTsExtensions in tsconfig.json, to silence a Vite warning. I also added a test:watch script.
+Reviewing the test report and finalizing engine version requirements.
+Reviewing the test report and finalizing engine version requirements.
+This is good work, with nothing to push back on. The mutation check stands out: the agent switched RLS off, confirmed the 6 isolation tests failed, then switched it on again. That proves the tests can catch a real leak. Also good are the guard that refuses any database not ending in _test, and the clear error when Postgres is down.
+
+On the engines question, choose >=20.12. It’s the accurate floor, and it avoids adding a dotenv dependency. The README should say “Node 20.12+ (24 recommended, see .nvmrc)”.
+
+Send this (engines fix plus auth)
+
+Set "engines" node to >=20.12 and keep the clear error for older Node. Then do Step 3: auth.
+- Signup, login and logout as Server Actions (zod validation, bcryptjs, sessions table, httpOnly sameSite=lax cookie, 7 days, secure in production).
+- Store only a SHA-256 hash of the session token in the DB, not the raw token.
+- getCurrentUser() reads the cookie and checks for a non-expired session.
+- src/proxy.ts only checks that the cookie exists and redirects to /login for /tasks and /import. Real authorisation happens in getCurrentUser(), and every page and action uses withUser(user.id, ...).
+- scripts/seed.ts creates demo users alice and bob (passwords hashed at runtime, demo-only, documented in the README).
+- Tests: signup, login with a wrong password, login with an unknown email (same error message as a wrong password), and an expired session.
+Run npm test, commit, then stop and wait.
+Check in the browser:
+
+Sign up two users and log out and back in.
+Visit /tasks while logged out and confirm it redirects to /login.
+In your browser’s dev tools, confirm the session cookie is HttpOnly.
+When the agent reports back, paste it here and I’ll review it before Step 4 (task CRUD).
+
+Auth (Step 3) is done and committed (530e187), with engines set to >=20.12 and the clear error kept for older Node. npm test passes all 31 tests (17 RLS, 14 auth). I've stopped here until you approve the next step.
+How auth works
+
+Signup, login and logout are Server Actions in src/app/(auth)/actions.ts. They're thin wrappers that set the cookie and redirect. The logic lives in src/lib/auth/service.ts, which has no Next.js dependency so it can be tested directly.
+Emails are trimmed and lowercased. Signup rejects an email that's already registered, ignoring case.
+Passwords are hashed with bcryptjs at cost 12 and must be 8–72 bytes. bcryptjs silently ignores everything past 72 bytes, so signup rejects longer passwords.
+Login returns "Invalid email or password." for both an unknown email and a wrong password. For an unknown email it still checks against a dummy hash, so the response doesn't come back faster.
+Sessions (src/lib/auth/session.ts) use a random 32-byte token in the cookie: httpOnly, SameSite=Lax, 7 days, Secure when NODE_ENV=production. The database stores only the token's SHA-256 hash.
+getCurrentUser() checks for an unexpired session and runs at most once per request. requireUser() redirects to /login if there's no user.
+src/proxy.ts only checks that the cookie exists, for /tasks and /import. It imports the cookie name from a module with no dependencies, so it doesn't pull in pg.
+Not every query goes through withUser. The users and sessions queries run on the pool directly, because login happens before there's a user ID to set. Every task query will go through withUser. The placeholder /tasks page already does, and I checked it against the running app.
+Seed: scripts/seed.ts creates alice and bob, hashing their passwords at runtime, and can be re-run. It connects as the owner, because resetting a password on re-run needs UPDATE on users, which app_user doesn't have. The demo credentials are in the new README.md.
+Tests: tests/integration/auth.test.ts covers your four cases. Unknown email and wrong password are compared with toEqual, so the results must be identical. It also covers: the stored hash isn't the password, duplicate email, field validation, the 72-byte limit, only the token hash being stored, the 7-day expiry, using the stored hash as a token failing, and logout deleting the session.
+Checked against the running app, with a production build on port 3100 and curl calls in the same format React's client sends:
+
+Without a cookie, the proxy redirects to /login.
+A bogus cookie gets past the proxy, then requireUser redirects to /login.
+Wrong password and unknown email give the same error. Signup validation errors and the duplicate-email error show up correctly.
+A successful login sets HttpOnly; Secure; SameSite=lax with a 7-day expiry and redirects to /tasks. The stored session ID equals sha256(cookie).
+Logout clears the cookie and deletes the session row. The old token then redirects to /login.
+One thing to watch: npm start runs in production mode, so the cookie gets Secure. Chrome and Firefox accept that over http://localhost, but Safari may not, so use npm run dev or Chrome for the recording.
+
+Drafting the next prompt for task CRUD and filtering.
+Auth looks good, and nothing needs fixing. The decisions that matter are right:
+
+The same error for an unknown email and a wrong password, with a dummy hash check so the timing doesn’t leak.
+Only a hash of the session token in the DB.
+The 72-byte password limit.
+Auth logic separated from Next.js so it can be tested.
+Also note that users and sessions queries use the pool directly, because there’s no user yet at login, and the agent said so explicitly. Mention this in the README’s design notes. Make sure the demo passwords in the README are throwaway ones, not any you use elsewhere.
+
+You’re ahead of schedule: about 40 minutes in, with schema, RLS, tests and auth done. To save round trips, I’d combine CRUD and the list into one message, still with two commits.
+
+Send this (task CRUD, then list and filters)
+
+Do the next two steps, with a separate commit for each.
+
+Commit 1: task CRUD.
+- Server Actions for create, edit, complete (status=done), reopen, and soft-delete (sets deleted_at, with a confirm before deleting). Validate with a zod schema shared by create and edit: title trimmed, 1-200 code points; due_date required, a real calendar date YYYY-MM-DD; priority required, whole number 1-5; notes optional; status todo/in_progress/done.
+- Every task query and action goes through withUser(user.id, ...), never the pool directly. Every action calls requireUser().
+- Catch unique violation 23505 on create and edit and show "A task with this title and due date already exists."
+- Forms show field errors and a pending state.
+
+Commit 2: list, search, filters and UI states.
+- /tasks lists non-deleted tasks sorted by due date, then priority.
+- Search over title and notes with ILIKE. Escape % and _ in the search term so "100%" matches literally.
+- Filters: status, priority, overdue (due_date < current_date and status != done). Keep them in URL search params.
+- loading.tsx, error.tsx, and an EmptyState with two variants: "no tasks yet" and "no tasks match your filters" (with a clear-filters link).
+- Plain CSS.
+
+Tests: unit tests for the task zod schema (200/201 chars, priority 0/6/3.5, bad dates, Feb 29 in 2024 and 2025). Integration tests (as app_user through withUser) for: create/edit/complete/soft-delete, soft-deleted tasks hidden from the list, search including the % escape, each filter, and that user B's queries never return user A's tasks.
+Run npm test and commit after each part. Stop after commit 2 and wait.
+Check in the browser (use npm run dev or Chrome):
+
+Log in as alice, then create, edit, complete and delete a task.
+Create a duplicate and confirm the friendly error.
+Try search and each filter.
+Look at the empty state.
+Log in as bob and confirm you see none of alice’s tasks.
+For the loading and error states, ask the agent how to trigger them, for example a temporary delay or a forced error. You’ll want to show them in the recording.
+
+Paste the agent’s report when it’s done and I’ll review it before the CSV import.
+
+Both parts are done and committed separately. npm test passes all 101 tests and the typecheck is clean. I've stopped here until you approve the next step.
+Commit 1: task CRUD (81b6938)
+
+Schema: src/lib/tasks/schema.ts is the zod schema shared by create and edit.
+Title: trimmed, then 1–200 code points ([...s].length).
+Due date: must be a real calendar date written exactly as YYYY-MM-DD.
+Priority: must be plain digits for a whole number 1–5, so "high", 3.5, 1e0 and 0x3 are all rejected. That rule is in parsePriority() so the CSV import can reuse it.
+Notes: optional, blank becomes null. I added a 10,000-character cap, which you didn't ask for.
+Queries: every function in src/lib/tasks/queries.ts takes the client that withUser provides, so none of them can run on the pool directly. Each one excludes soft-deleted rows.
+Actions: src/app/tasks/actions.ts calls requireUser() and then withUser(user.id, …) in every action. A 23505 error shows "A task with this title and due date already exists." on the title field. A task ID that's malformed or belongs to another user returns 404.
+UI: create is at /tasks/new and edit at /tasks/[id]/edit. The shared TaskForm shows field errors and a pending state, and keeps what you typed after a failed submit. TaskActions has Complete/Reopen and Delete buttons with pending states; Delete asks for confirmation first. Reopen sets the status back to todo.
+Commit 2: list, search, filters and UI states (4901667)
+
+Search: ILIKE on title and notes with ESCAPE '\'. escapeLike escapes %, _ and \. To be sure the test catches it, I briefly turned the escaping off and the three literal-match tests failed.
+Filters: status, priority, and overdue (due before current_date and not done). They live in the URL through a plain GET form. Invalid values like ?priority=high are ignored instead of causing an error.
+States: the EmptyState decides between "No tasks yet" and "No tasks match your filters" (with a clear-filters link) by comparing against the unfiltered count. There are also loading.tsx and an error.tsx with a retry button.
+Tests added
+
+task-schema.test.ts: 200 vs 201 characters, 200 emoji, priority 0, 6, 3.5, "high" and others, invalid dates, Feb 29 in 2024 (accepted) and 2025 (rejected).
+filters.test.ts: reading filters from the URL and escaping for LIKE.
+tasks.test.ts: create, edit, complete, reopen, soft delete, duplicates, and Bob being unable to touch Alice's task.
+task-list.test.ts: sorting, soft-deleted tasks hidden, search (case, %, _, \), each filter and combinations, and Bob never seeing Alice's tasks under any filter.
+Checked in the running app:
+
+Create with invalid input shows all three field errors.
+A duplicate shows the duplicate message.
+Create, edit, complete, reopen and delete all work, and delete leaves the row with deleted_at set.
+Bob gets a 404 on Alice's edit page and actions.
+Both empty states and every URL filter render correctly, and the filter form stays prefilled.
+Decisions for you to check
+
+Priority 1 is treated as the highest, so the list sorts 1→5 within a due date. If you meant 5 to be highest, it's a one-word change.
+"Overdue" and "today" use the database's current_date, which is UTC in the container. Near midnight that can differ from the viewer's local date by a day. I listed it as a "what's next" item rather than handling time zones now.
+Not checked in a real browser: I drove the actions with curl. That covers the server side, but not the client-only behaviour: the delete confirm dialog, the pending labels, and inputs refilling after a failed submit. Please click through those once.
+Planning conflict handling, response shape, and test coverage.
+This is solid. The agent verified its own search escaping by breaking it and watching the tests fail, and it has handled the cross-user cases at the query level. You’re about an hour in, with about two hours left. The remaining work (import, the edge-case demo, the README) is the core of the assessment, and you’re ahead of plan.
+
+Decisions to make
+
+Priority direction. Keep 1 as the highest, and make it visible. Put the hint “1 = highest, 5 = lowest” next to the priority field and add it to the README, so nobody has to guess.
+The 10,000-character notes cap. It’s fine, but the import must apply the same rule. Otherwise a CSV row passes validation and then fails at the database. The prompt below makes the import reuse the shared schema, so a too-long note is rejected with its own reason. Add that to the README as an extra rule beyond the brief.
+Time zone for “overdue”. It’s fine as a “what’s next” item.
+Do this while the agent works: click through what it couldn’t test
+Use npm run dev or Chrome and log in as alice:
+
+Click Delete and confirm the dialog appears and cancelling works.
+Submit the form with invalid input and confirm the values you typed are still there.
+Watch for the pending labels on the buttons while an action runs.
+If anything looks wrong, note it and tell the agent after the import is done.
+
+Send this (import: parsing first, then the endpoint and UI)
+
+Next: CSV import, as two commits.
+
+Commit 1: parsing and validation as pure functions in src/lib/import/ (parse, validate, dedupe, rejectedCsv) with unit tests, no DB.
+- Reuse the shared task schema and parsePriority so CSV and UI rules can never diverge (including the notes length cap, with its own rejection reason).
+- Parse with papaparse WITHOUT skipEmptyLines; use header:false and read the header row yourself so row numbers stay exact (header = row 1, row number = record index). Strip BOM, handle CRLF and quoted commas. Trim and lowercase headers. Required columns: title, due_date, priority; notes is optional. Missing required column, empty file, or an unparseable file (e.g. unterminated quote) is a whole-file error with a clear message.
+- A row whose cells are all empty or whitespace is blank: skipped and counted, not rejected.
+- A row with more fields than the header is rejected with "Too many fields (check for an unquoted comma)". Fewer fields: treat missing cells as empty and let validation report them.
+- Report ALL problems for a row, joined with "; ".
+- In-file duplicates: same trimmed title and due_date; first VALID occurrence wins, later rows are rejected with "Duplicate of row N". If the first occurrence was invalid, a later valid row is not a duplicate.
+- Rejected-rows CSV builder: columns title, due_date, priority, notes, row_number, reason; proper quoting; prefix cells starting with = + - @ with a single quote.
+Tests: each failure reason, 200 vs 201 chars, priority "high"/3.5/0/6/blank, bad dates, Feb 29 in 2024 and 2025, quoted comma, CRLF, blank row, ",,," row, BOM, first-invalid-then-valid, and that the rejected CSV round-trips through the parser with commas, quotes and newlines in fields.
+
+Commit 2: endpoint and UI.
+- Put the logic in src/lib/import/service.ts (testable without HTTP); POST /api/import is thin. It returns 401 JSON if not logged in, enforces 1 MB and 5000 data rows, and decodes as UTF-8.
+- Insert all valid rows in ONE withUser transaction with INSERT ... SELECT FROM jsonb_to_recordset ... ON CONFLICT (user_id, title, due_date) WHERE deleted_at IS NULL DO NOTHING RETURNING title, due_date. Map valid rows that were not returned back to their row numbers by (title, due_date), not by array order, and report them as "Duplicate of existing task". Any DB error rolls back everything and returns a clean error, never a crash.
+- Response: { imported, skippedBlank, totalRows, rejected: [{ row, reason, data }] }.
+- /import page: file input with a pending state, summary (imported, skipped blank, rejected), a rejected table (row number, reason, values), a "Download rejected rows" button (client-side CSV), and clear display of whole-file errors. Link between /tasks and /import.
+Integration tests (as app_user): valid rows inserted; account duplicates rejected with the right row numbers; importing the same file twice rejects every row the second time; soft-deleted tasks do not count as duplicates; user B importing the same rows as user A is allowed; a failure mid-import leaves nothing inserted.
+Run npm test, commit after each part, then stop and wait.
+When it reports back, paste it here. The next step is the edge-case file and the demo run-through.
+
+CSV import is done in two commits, and npm test passes all 177 tests with a clean typecheck. I've stopped here until you approve the next step.
+Commit 1: parsing and validation (8207d53)
+
+Parsing: parse.ts runs papaparse with header:false and skipEmptyLines:false, and assigns row numbers itself: the header is row 1, and a quoted field spanning several lines still counts as one row.
+A file that ends with a line break would otherwise produce a phantom extra row; the parser drops exactly that one, so a normal file isn't reported as "1 blank row skipped".
+Whole-file errors cover: an empty file, a header with no data rows, missing or repeated required columns, and quote errors.
+Validation: validate.ts uses the shared task schema, so the CSV and UI rules can't diverge, including the notes length cap. Every problem in a row is reported, joined with "; ".
+Duplicates within the file: dedupe.ts keeps the first valid occurrence; if the first occurrence was invalid, a later valid row isn't a duplicate.
+Rejected-rows CSV: rejectedCsv.ts builds the download with the columns you specified, CRLF line endings, proper quoting, and a ' prefix on cells starting with = + - @.
+Pipeline and fixture: analyze.ts ties these together. fixtures/edge-cases.csv is the demo file. It uses CRLF and contains a quoted comma, an empty row, a ,,, row, high, a 201-character title, an in-file duplicate, Feb 30, and an unquoted comma. .gitattributes keeps its bytes exact.
+Commit 2: endpoint and UI (951646e)
+
+Service: service.ts enforces 1 MB and 5,000 data rows and decodes strict UTF-8.
+It inserts every valid row in one withUser transaction with the jsonb_to_recordset … ON CONFLICT … DO NOTHING RETURNING statement.
+Rows that weren't returned are matched back by (title, due_date) and reported as "Duplicate of existing task". The test interleaves duplicates with new and invalid rows, so a position-based mapping would fail it.
+A database error rolls back and returns a clean error message.
+Endpoint: route.ts always answers with JSON: 401 when signed out, 413 over the limits, 400 for file problems, and 500 otherwise.
+Page: /import and ImportForm give a pending state, the three summary counts, a table of rejected rows, the "Download rejected rows" button, and clear whole-file errors. /tasks and /import link to each other.
+Decisions for you to check
+
+"Too many fields" is the only reason given for that row. The extra comma shifts every value, so title, date or priority errors on that row would be misleading. This is a deliberate exception to "report all problems".
+A blank priority now says "Priority is required." instead of the 1–5 message. The schema is shared, so the UI form uses the same wording.
+Duplicate matching is case-sensitive, following your earlier exact-title rule: "pay rent" and "Pay rent" are different tasks.
+The download starts with a BOM so Excel reads UTF-8 correctly. Our parser strips it, so a downloaded file can be re-imported.
+Unknown extra columns are ignored, and columns can be in any order.
+A mid-import failure is simulated with a test-only trigger that rejects one row partway through the batch. It's created and dropped inside that test.
+Not checked in a real browser: I tested the endpoint with curl against a production build. The pending state, the results table and the file download are client-side only, so please try one upload and download yourself.
+
+Drafting README sections and planning repository hygiene checks.
+This is good, and I’d accept all the agent’s decisions. The ones worth defending in the live session are:
+
+“Too many fields” as the only reason for that row. The extra comma shifts every value, so listing date or priority errors would be misleading.
+A BOM that the parser strips again, so a downloaded rejected-rows file can be re-imported.
+A test-only trigger to simulate a mid-import failure. That’s the right way to prove the transaction rolls back.
+The fixture is a good demo file. It covers your five required cases plus three extras (,,,, Feb 30, an unquoted comma). For the recording, the “duplicate” case works best if you show it twice. The first upload shows the in-file duplicate. Uploading the same file again shows every valid row rejected as “Duplicate of existing task”.
+
+Two things to do right now, before more commits
+
+Check what email your commits carry. They are public once pushed. Run:
+   git config user.email
+   git log --format='%an <%ae>' | sort -u
+If it shows your company address, switch to your GitHub noreply address (GitHub, then Settings, then Emails, then “Keep my email addresses private” shows it). The brief says no company name and no personal data. If the commits haven’t been pushed yet, fix them with:
+
+   git config user.email "<your-noreply-address>"
+   git rebase -r --root --exec "git commit --amend --no-edit --reset-author"
+If you already pushed them, add git push --force-with-lease afterwards. That’s safe on a brand-new repo you’re working in alone.
+2. Try one upload yourself in Chrome or on npm run dev. Log in as alice, upload fixtures/edge-cases.csv, check the results table, click “Download rejected rows” and open the file. Then upload the same file again.
+
+Send this (edge-case test, then README)
+
+Two steps left, with a commit for each.
+
+Step 8: add tests/integration/edge-cases.test.ts that runs fixtures/edge-cases.csv through the import service as app_user and asserts exact numbers: imported count, blank rows skipped, and each rejected row's row number and reason. Then import the same file again and assert 0 imported and that every previously imported row is now rejected as "Duplicate of existing task", while the invalid rows keep their original reasons. Keep the fixture's five required cases (a duplicate, an empty row, priority "high", a title over 200 characters, a quoted field with a comma) plus the extras, and keep it under 40 lines.
+
+Step 9: write README.md with these sections:
+- What it is, and tech stack (Next.js 16, TypeScript, Postgres 16 in Docker, pg, vitest).
+- Prerequisites: Node 20.12+ (24 recommended, see .nvmrc), Docker Desktop running.
+- Quick start (exact commands: cp .env.example .env, npm install, npm run db:up, npm run db:migrate, npm run db:seed, npm run dev) and the demo accounts (demo-only passwords).
+- Running the tests: Docker must be running and db:up done first; what npm test covers.
+- Design notes: RLS approach (two roles, app_current_user_id(), withUser with transaction-local set_config, FORCE RLS, why the policies check only user_id and deleted_at is filtered in queries, why users/sessions queries use the pool directly, soft delete via UPDATE with no DELETE grant).
+- CSV import: rules, row numbering (header = row 1), how duplicates are decided, blank rows, the "Too many fields" rule, rejected CSV format and the formula-neutralising prefix.
+- Assumptions and decisions: priority 1 = highest, case-sensitive exact trimmed title match, soft-deleted tasks don't count as duplicates, due date required, notes capped at 10,000 characters (rejection reason beyond the brief), overdue uses the database's current_date (UTC), proxy.ts replaces middleware in Next 16.
+- Edge-case demo: a table listing each fixture row and its expected outcome, and the two-upload demo (first import, then the same file again).
+- What I would do next: login rate limiting, CSRF review, password reset, pagination, time zones for overdue, streaming parse for large files, CI with a Postgres service, Playwright end-to-end tests, expired-session cleanup.
+- How I used AI: short honest paragraph, with a pointer to ai-log/.
+- Video: placeholder line "Screen recording: <link to add>".
+Then do a clean verification: docker compose down -v, npm ci, npm run db:up, npm run db:migrate, npm test, npm run build, and fix anything that fails. Finally run repo hygiene checks and report the results: git ls-files shows no .env, no node_modules, no binaries, no Context/; grep the tracked files for anything that looks like a real secret, company name or personal email; .env.example contains placeholders only; package-lock.json is committed.
+Stop after the final commit and report.
+After it reports, you do these
+
+Click through the README steps on a clean terminal as if you were a stranger.
+Record the 3 to 5 minute video, then add the link to the README.
+Copy the session transcripts into ai-log/, plus the saved claude.ai planning chat.
+Push, and open the repo in a private window to confirm it’s public and nothing odd shows.
+Paste the report here when it’s done and I’ll check it with you before you record.

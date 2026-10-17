@@ -1,6 +1,11 @@
+# Video
+
+link - https://drive.google.com/file/d/1It5oPeaLKz5j8nu7C6nEzTsqbJlzZ8il/view?usp=sharing
+
+
 # Task List
 
-A small task-list web app with CSV import. Each user signs in and sees only
+A task-list web app with CSV import. Each user signs in and sees only
 their own tasks, and **PostgreSQL row-level security** enforces that, not just
 the application code. Tasks have a title, notes, due date, priority (1–5) and
 status. Users can create, edit, complete, reopen and soft-delete them, search
@@ -288,6 +293,3 @@ code and the reasoning, asked for RLS tests before any auth code, and ran or
 checked the results myself; it also verified against the running app.
 `ai-log/` contains the complete, unedited transcripts of these sessions.
 
-## Video
-
-Screen recording: <link to add>
